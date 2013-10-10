@@ -11,7 +11,7 @@ class Board
       next unless line =~ /\d|_/
       @rows << Row.new(line)
       unless @rows.last.valid?
-        $stderr.puts "ERROR: Invalid row #{@rows.last.inspect}"
+        $stderr.puts "ERROR - Invalid board row detected: #{line.chomp}"
         exit 2
       end
     end
