@@ -1,20 +1,24 @@
-unless defined? Row
-  require File.join(File.dirname(__FILE__), 'row')
+unless defined? NumberGroup
+  require File.join(File.dirname(__FILE__), 'number_group')
 end
 
 class Board
-  attr_reader :rows
+  attr_reader :rows, :columns, :squares
 
   def initialize board_file
     @rows = []
     board_file.each do |line|
       next unless line =~ /\d|_/
-      @rows << Row.new(line)
+      @rows << NumberGroup.new(line)
       unless @rows.last.valid?
         $stderr.puts "ERROR - Invalid board row detected: #{line.chomp}"
         exit 2
       end
     end
+  end
+
+  def columns
+    rows.map(&:numbers).transpose
   end
 
   def to_s
