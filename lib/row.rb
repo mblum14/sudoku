@@ -1,15 +1,21 @@
+require 'forwardable'
+
 class Row
   attr_reader :row
 
-  def initialize line
-    @row = line.scan(/\d|_/).map(&:to_i)
+  extend Forwardable
+  def_delegators :@row, :<<, :concat, :join, :length # and anything else
+
+  def initialize line=''
+    @row = []
+    @row.concat line.scan(/\d|_/).map(&:to_i)
   end
 
   def valid?
-    row.length == 9
+    self.length == 9
   end
 
   def to_s
-    row.join(' ').gsub('0', ' ').scan(/.{1,6}/).join("| ").concat(' |').prepend('| ')
+    self.join(' ').gsub('0', ' ').scan(/.{1,6}/).join("| ").concat(' |').prepend('| ')
   end
 end
