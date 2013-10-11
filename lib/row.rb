@@ -1,14 +1,18 @@
 require 'forwardable'
 
-class NumberGroup
-  attr_reader :numbers
+class Row
+  attr_accessor :numbers
 
   extend Forwardable
-  def_delegators :@numbers, :<<, :concat, :join, :length, :uniq, :sort
+  def_delegators :@numbers, :<<, :concat, :join, :length, :uniq, :sort, :reject
 
   def initialize line=''
-    @numbers = []
-    @numbers.concat line.scan(/\d|_/).map(&:to_i)
+    if line.kind_of?(::Array)
+      @numbers = line
+    else
+      @numbers = []
+      @numbers.concat line.scan(/\d|_/).map(&:to_i)
+    end
   end
 
   def valid?
@@ -34,6 +38,6 @@ class NumberGroup
   end
 
   def has_no_duplicate_numbers?
-    self.uniq.length == self.length
+    self.reject(&:zero?).uniq.length == self.reject(&:zero?).length
   end
 end

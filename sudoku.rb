@@ -20,5 +20,5 @@ end
 
 if board_file
   board = Board.new(File.open(board_file))
-  puts board
+  board.solve!
 end

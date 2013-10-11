@@ -1,15 +1,15 @@
-unless defined? NumberGroup
-  require File.join(File.dirname(__FILE__), 'number_group')
+unless defined? Row
+  require File.join(File.dirname(__FILE__), 'row')
 end
 
 class Board
-  attr_reader :rows, :columns, :squares
+  attr_reader :rows
 
   def initialize board_file
     @rows = []
     board_file.each do |line|
       next unless line =~ /\d|_/
-      @rows << NumberGroup.new(line)
+      @rows << Row.new(line)
       unless @rows.last.valid?
         $stderr.puts "ERROR - Invalid board row detected: #{line.chomp}"
         exit 2
@@ -17,8 +17,17 @@ class Board
     end
   end
 
-  def columns
-    rows.map(&:numbers).transpose
+  def solve!
+    begin
+      next!
+      system('clear')
+      puts self
+      sleep(0.1)
+    end until solved?
+  end
+
+  def solved?
+    rows.select(&:solved?).length == 9
   end
 
   def to_s
@@ -43,6 +52,16 @@ class Board
 
   def divider
     "+-------+-------+-------+"
+  end
+
+  def next!
+    rows.each_with_index do |row, row_idx|
+      next if row.solved?
+      row.each do |number|
+        next if number.zero?
+        
+      end
+    end
   end
 
 end
