@@ -15,6 +15,10 @@ class Row
     end
   end
 
+  def remaining_numbers
+    (1..9).to_a - @numbers
+  end
+
   def valid?
     self.length == 9 && has_no_duplicate_numbers?
   end
