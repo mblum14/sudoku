@@ -57,11 +57,16 @@ class Board
   def next!
     rows.each_with_index do |row, row_idx|
       next if row.solved?
-      row.each do |number|
-        next if number.zero?
-        
+      row.each_with_index do |number, col_idx|
+        next unless number.zero?
+        next unless solved = solve_number(row_idx, col_idx)
+        return row[col_idx] = solved
       end
     end
+  end
+
+  def solve_number row_idx, col_idx
+    nil # TODO
   end
 
 end
