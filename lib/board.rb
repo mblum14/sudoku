@@ -85,6 +85,20 @@ class Board
       next if results.index(false)
       return number
     end
+
+    missing_numbers = (1..9).to_a - column_at(col_idx)
+    return missing_numbers.first if missing_numbers.length == 1
+    missing_numbers.each do |number|
+      # can number be put anywhere else in this row?
+      results = []
+      column_at(col_idx).each_with_index do |val, row|
+        next unless val.zero?
+        next if row == row_idx
+        results << (@rows[row].include?(number) || box_at(row, col_idx).include?(number))
+      end
+      next if results.index(false)
+      return number
+    end
     nil
   end
 
