@@ -4,18 +4,14 @@ require File.join(File.dirname(__FILE__), 'lib', 'board')
 
 def usage message
     $stderr.puts(message)
-    $stderr.puts("Usage: #{File.basename($0)}: [-f <FILE> ]")
+    $stderr.puts("Usage: #{File.basename($0)}: <FILE>")
     exit 2
 end
 
-board_file = 'board.txt'
-
-loop do
-  case ARGV[0]
-  when '-f' then  ARGV.shift; board_file = ARGV.shift
-  when /^-/ then  usage("Unknown option: #{ARGV[0].inspect}")
-  else break
-  end
+if ARGV[0]
+  board_file = ARGV.shift
+else
+  usage("Provide a board file")
 end
 
 if board_file
