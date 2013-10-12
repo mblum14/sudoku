@@ -29,10 +29,10 @@ describe Row do
     end
   end
 
-  describe "#remaining_numbers" do
+  describe "#missing_numbers" do
     it "should have 1, 2, and 3 as the reamining numbers" do
       row = Row.new('| _ _ _ | 4 5 6 | 7 8 9 |')
-      expect(row.remaining_numbers).to eql [1, 2, 3]
+      expect(row.missing_numbers).to eql [1, 2, 3]
     end
   end
 

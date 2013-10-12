@@ -4,7 +4,7 @@ class Row
   attr_accessor :numbers
 
   extend Forwardable
-  def_delegators :@numbers, :<<, :concat, :join, :length, :uniq, :sort, :reject, :each_with_index, :[]=
+  def_delegators :@numbers, :<<, :concat, :join, :length, :uniq, :sort, :reject, :each_with_index, :[]=, :[], :select
 
   def initialize line=''
     if line.kind_of?(::Array)
@@ -15,7 +15,7 @@ class Row
     end
   end
 
-  def remaining_numbers
+  def missing_numbers
     (1..9).to_a - @numbers
   end
 
