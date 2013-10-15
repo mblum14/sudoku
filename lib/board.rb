@@ -64,7 +64,8 @@ class Board
       row.each_with_index do |number, col_idx|
         next unless number.zero?
         next unless solution = solve_number(row_idx, col_idx)
-        return row[col_idx] = solution
+        row[col_idx] = solution
+        return self
       end
     end
   end
