@@ -70,12 +70,12 @@ class Board
   end
 
   def solve_number row_idx, col_idx
+    # Check by row
     missing_numbers = @rows[row_idx].missing_numbers
     return missing_numbers.first if missing_numbers.length == 1
     missing_numbers.each do |number|
       next if column_at(col_idx).include? number
       next if box_at(row_idx, col_idx).include? number
-      # can number be put anywhere else in this row?
       results = []
       @rows[row_idx].each_with_index do |val, col|
         next unless val.zero?
@@ -86,15 +86,30 @@ class Board
       return number
     end
 
+    # Check by column
     missing_numbers = (1..9).to_a - column_at(col_idx)
     return missing_numbers.first if missing_numbers.length == 1
     missing_numbers.each do |number|
-      # can number be put anywhere else in this row?
       results = []
       column_at(col_idx).each_with_index do |val, row|
         next unless val.zero?
         next if row == row_idx
         results << (@rows[row].include?(number) || box_at(row, col_idx).include?(number))
+      end
+      next if results.index(false)
+      return number
+    end
+
+    # Check by box
+    missing_numbers = (1..9).to_a - box_at(row_idx, col_idx)
+    return missing_numbers.first if missing_numbers.length == 1
+    missing_numbers.each do |number|
+      results = []
+      box = box_at(row_idx, col_idx)
+      box.each_with_index do |val, idx|
+        next unless val.zero?
+        next if box_idx_for(row_idx, col_idx) == idx
+        results << (@rows[box_row_at(row_idx, idx)].include?(number) || column_at(box_col_at(col_idx, idx)).include?(number))
       end
       next if results.index(false)
       return number
@@ -124,5 +139,47 @@ class Board
       box += @rows[row][col_range]
     end
     box
+  end
+
+  def box_idx_for row_idx, col_idx
+    row_offset = case row_idx
+                 when 0, 3, 6 then 0
+                 when 1, 4, 7 then 3
+                 else 6
+                 end
+    col_offset = case col_idx
+                 when 0, 3, 6 then 0
+                 when 1, 4, 7 then 1
+                 else 2
+                 end
+    return row_offset + col_offset
+  end
+
+  def box_row_at row_idx, idx
+    row_offset = case idx
+                 when 0, 1, 2 then 0
+                 when 3, 4, 5 then 1
+                 else 2
+                 end
+
+    case row_idx
+    when 0, 1, 2 then return 0 + row_offset
+    when 3, 4, 5 then return 3 + row_offset
+    else return 6 + row_offset
+    end
+  end
+
+  def box_col_at col_idx, idx
+    col_offset = case idx
+                 when 0, 3, 6 then 0
+                 when 1, 4, 7 then 1
+                 else 2
+                 end
+
+    case col_idx
+    when 0, 1, 2 then return 0 + col_offset
+    when 3, 4, 5 then return 3 + col_offset
+    else return 6 + col_offset
+    end
   end
 end
