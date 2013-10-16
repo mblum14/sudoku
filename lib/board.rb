@@ -1,5 +1,5 @@
 unless defined? Row
-  require File.join(File.dirname(__FILE__), 'row')
+  require File.join(File.dirname(__FILE__), 'sudoku', 'array')
 end
 
 class Board
@@ -9,7 +9,7 @@ class Board
     @rows = []
     board_file.each do |line|
       next unless line =~ /\d|_/
-      @rows << Row.new(line)
+      @rows << [].extend(Sudoku::Array).import_sudoku_line!(line)
       unless @rows.last.valid?
         $stderr.puts "ERROR - Invalid board row detected: #{line.chomp}"
         exit 2
