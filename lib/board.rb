@@ -2,6 +2,8 @@ unless defined? Row
   require File.join(File.dirname(__FILE__), 'sudoku', 'array')
 end
 
+require 'benchmark'
+
 class Board
   attr_reader :rows
 
@@ -37,6 +39,15 @@ class Board
   end
 
   def solve!
+    # Uncomment to benchmark
+    #Benchmark.bmbm do |x|
+    #  x.report do
+    #    begin
+    #      next!
+    #    end until solved?
+    #  end
+    #end
+    #puts self
     begin
       next!
       system('clear')
@@ -46,7 +57,10 @@ class Board
   end
 
   def solved?
-    rows.select(&:solved?).length == 9
+    rows.each do |row|
+      return false unless row.solved?
+    end
+    true
   end
 
   def to_s
