@@ -16,9 +16,7 @@ class Board
       end
     end
     @columns = @rows.transpose
-    box_indices = [ [(0..2), (0..2)], [(0..2), (3..5)], [(0..2), (6..8)],
-                    [(3..5), (0..2)], [(3..5), (3..5)], [(3..5), (6..8)],
-                    [(6..8), (0..2)], [(6..8), (3..5)], [(6..8), (6..8)] ]
+    box_indices = [(0..2), (3..5), (6..8)].repeated_permutation(2).to_a
     @boxes = []
     box_indices.each do |row_range, col_range|
       box = []
