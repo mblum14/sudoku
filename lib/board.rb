@@ -109,11 +109,13 @@ class Board
     missing_numbers = (1..9).to_a - column_at(col_idx)
     return missing_numbers.first if missing_numbers.length == 1
     missing_numbers.each do |number|
+      next if row_at(row_idx).include? number
+      next if box_at(row_idx, col_idx).include? number
       results = []
       column_at(col_idx).each_with_index do |val, row|
         next unless val.zero?
         next if row == row_idx
-        results << (@rows[row].include?(number) || box_at(row, col_idx).include?(number))
+        results << (row_at(row).include?(number) || box_at(row, col_idx).include?(number))
       end
       next if results.index(false)
       return number
@@ -123,12 +125,14 @@ class Board
     missing_numbers = (1..9).to_a - box_at(row_idx, col_idx)
     return missing_numbers.first if missing_numbers.length == 1
     missing_numbers.each do |number|
+      next if row_at(row_idx).include? number
+      next if column_at(col_idx).include? number
       results = []
       box = box_at(row_idx, col_idx)
       box.each_with_index do |val, idx|
         next unless val.zero?
         next if box_idx_for(row_idx, col_idx) == idx
-        results << (@rows[box_row_at(row_idx, idx)].include?(number) || column_at(box_col_at(col_idx, idx)).include?(number))
+        results << (row_rel_to(row_idx, idx).include?(number) || col_rel_to(col_idx, idx).include?(number))
       end
       next if results.index(false)
       return number
@@ -140,55 +144,26 @@ class Board
     columns[col_idx]
   end
 
+  def row_at row_idx
+    @rows[row_idx]
+  end
+
   def box_at row_idx, col_idx
-    box_mapping = [
-      [0, 0, 0, 1, 1, 1, 2, 2, 2], [0, 0, 0, 1, 1, 1, 2, 2, 2], [0, 0, 0, 1, 1, 1, 2, 2, 2],
-      [3, 3, 3, 4, 4, 4, 5, 5, 5], [3, 3, 3, 4, 4, 4, 5, 5, 5], [3, 3, 3, 4, 4, 4, 5, 5, 5],
-      [6, 6, 6, 7, 7, 7, 8, 8, 8], [6, 6, 6, 7, 7, 7, 8, 8, 8], [6, 6, 6, 7, 7, 7, 8, 8, 8]
-    ]
-    box_number = box_mapping[row_idx][col_idx]
+    box_number = box_idx_for(row_idx, col_idx)
     boxes[box_number]
   end
 
   def box_idx_for row_idx, col_idx
-    row_offset = case row_idx
-                 when 0, 3, 6 then 0
-                 when 1, 4, 7 then 3
-                 else 6
-                 end
-    col_offset = case col_idx
-                 when 0, 3, 6 then 0
-                 when 1, 4, 7 then 1
-                 else 2
-                 end
-    return row_offset + col_offset
+    (row_idx - (row_idx % 3)) + (col_idx / 3)
   end
 
-  def box_row_at row_idx, idx
-    row_offset = case idx
-                 when 0, 1, 2 then 0
-                 when 3, 4, 5 then 1
-                 else 2
-                 end
-
-    case row_idx
-    when 0, 1, 2 then return 0 + row_offset
-    when 3, 4, 5 then return 3 + row_offset
-    else return 6 + row_offset
-    end
+  def row_rel_to row_idx, box_idx
+    row_offset = box_idx / 3
+    return @rows[(row_idx - (row_idx % 3)) + row_offset]
   end
 
-  def box_col_at col_idx, idx
-    col_offset = case idx
-                 when 0, 3, 6 then 0
-                 when 1, 4, 7 then 1
-                 else 2
-                 end
-
-    case col_idx
-    when 0, 1, 2 then return 0 + col_offset
-    when 3, 4, 5 then return 3 + col_offset
-    else return 6 + col_offset
-    end
+  def col_rel_to col_idx, box_idx
+    col_offset = (box_idx % 3) % 3
+    return column_at(((col_idx / 3) * 3) + col_offset)
   end
 end
