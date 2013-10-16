@@ -19,10 +19,6 @@ module Sudoku
       self.concat line.scan(/\d|_/).map(&:to_i)
     end
 
-    def numbers
-      self
-    end
-
     def to_s
       self.join(' ').gsub('0', ' ').scan(/.{1,6}/).join("| ").concat(' |').prepend('| ')
     end

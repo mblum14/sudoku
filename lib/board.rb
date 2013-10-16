@@ -18,7 +18,7 @@ class Board
   end
 
   def columns
-    @rows.map(&:numbers).transpose
+    @rows.transpose
   end
 
   def solve!
