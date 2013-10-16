@@ -18,7 +18,7 @@ class Board
   end
 
   def columns
-    @rows.transpose.map { |col| col.extend Sudoku::Array }
+    @rows.transpose
   end
 
   def boxes
@@ -31,7 +31,7 @@ class Board
       row_range.each do |row|
         box += @rows[row][col_range]
       end
-      @boxes << box.extend(Sudoku::Array)
+      @boxes << box
     end
     @boxes
   end
