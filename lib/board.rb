@@ -18,7 +18,22 @@ class Board
   end
 
   def columns
-    @rows.transpose
+    @rows.transpose.map { |col| col.extend Sudoku::Array }
+  end
+
+  def boxes
+    box_indices = [ [(0..2), (0..2)], [(0..2), (3..5)], [(0..2), (6..8)],
+                    [(3..5), (0..2)], [(3..5), (3..5)], [(3..5), (6..8)],
+                    [(6..8), (0..2)], [(6..8), (3..5)], [(6..8), (6..8)] ]
+    @boxes = []
+    box_indices.each do |row_range, col_range|
+      box = []
+      row_range.each do |row|
+        box += @rows[row][col_range]
+      end
+      @boxes << box.extend(Sudoku::Array)
+    end
+    @boxes
   end
 
   def solve!
@@ -128,18 +143,8 @@ class Board
       [3, 3, 3, 4, 4, 4, 5, 5, 5], [3, 3, 3, 4, 4, 4, 5, 5, 5], [3, 3, 3, 4, 4, 4, 5, 5, 5],
       [6, 6, 6, 7, 7, 7, 8, 8, 8], [6, 6, 6, 7, 7, 7, 8, 8, 8], [6, 6, 6, 7, 7, 7, 8, 8, 8]
     ]
-    box_indices = {
-      '0' => [(0..2), (0..2)], '1' => [(0..2), (3..5)], '2' => [(0..2), (6..8)],
-      '3' => [(3..5), (0..2)], '4' => [(3..5), (3..5)], '5' => [(3..5), (6..8)],
-      '6' => [(6..8), (0..2)], '7' => [(6..8), (3..5)], '8' => [(6..8), (6..8)]
-    }
     box_number = box_mapping[row_idx][col_idx]
-    box = []
-    row_range, col_range = box_indices[box_number.to_s]
-    row_range.each do |row|
-      box += @rows[row][col_range]
-    end
-    box
+    boxes[box_number]
   end
 
   def box_idx_for row_idx, col_idx
