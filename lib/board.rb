@@ -3,7 +3,7 @@ unless defined? Row
 end
 
 class Board
-  attr_reader :rows
+  attr_reader :rows, :columns, :boxes
 
   def initialize board_file
     @rows = []
@@ -15,13 +15,7 @@ class Board
         exit 2
       end
     end
-  end
-
-  def columns
-    @rows.transpose
-  end
-
-  def boxes
+    @columns = @rows.transpose
     box_indices = [ [(0..2), (0..2)], [(0..2), (3..5)], [(0..2), (6..8)],
                     [(3..5), (0..2)], [(3..5), (3..5)], [(3..5), (6..8)],
                     [(6..8), (0..2)], [(6..8), (3..5)], [(6..8), (6..8)] ]
@@ -33,7 +27,6 @@ class Board
       end
       @boxes << box
     end
-    @boxes
   end
 
   def solve!
@@ -83,6 +76,8 @@ class Board
         next unless number.zero?
         next unless solution = solve_number(row_idx, col_idx)
         row[col_idx] = solution
+        column_at(col_idx)[row_idx] = solution
+        box_at(row_idx, col_idx)[box_idx_for(row_idx, col_idx)] = solution
         return self
       end
     end
@@ -127,14 +122,12 @@ class Board
     missing_numbers.each do |number|
       next if row_at(row_idx).include? number
       next if column_at(col_idx).include? number
-      results = []
-      box = box_at(row_idx, col_idx)
-      box.each_with_index do |val, idx|
+      posibilities = []
+      box_at(row_idx, col_idx).each_with_index do |val, idx|
         next unless val.zero?
-        next if box_idx_for(row_idx, col_idx) == idx
-        results << (row_rel_to(row_idx, idx).include?(number) || col_rel_to(col_idx, idx).include?(number))
+        posibilities << (row_rel_to(row_idx, idx).include?(number) || col_rel_to(col_idx, idx).include?(number))
       end
-      next if results.index(false)
+      next if posibilities.index(false)
       return number
     end
     nil
@@ -145,12 +138,11 @@ class Board
   end
 
   def row_at row_idx
-    @rows[row_idx]
+    rows[row_idx]
   end
 
   def box_at row_idx, col_idx
-    box_number = box_idx_for(row_idx, col_idx)
-    boxes[box_number]
+    boxes[box_idx_for(row_idx, col_idx)]
   end
 
   def box_idx_for row_idx, col_idx
@@ -159,11 +151,11 @@ class Board
 
   def row_rel_to row_idx, box_idx
     row_offset = box_idx / 3
-    return @rows[(row_idx - (row_idx % 3)) + row_offset]
+    @rows[(row_idx - (row_idx % 3)) + row_offset]
   end
 
   def col_rel_to col_idx, box_idx
     col_offset = (box_idx % 3) % 3
-    return column_at(((col_idx / 3) * 3) + col_offset)
+    column_at(((col_idx / 3) * 3) + col_offset)
   end
 end
